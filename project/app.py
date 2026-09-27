@@ -5,6 +5,9 @@ from urllib.parse import urlparse, parse_qs
 import uuid
 import re
 import logging
+import psycopg
+import time
+
 
 # пошук, вичитування та завантаження index.html
 # file = open("static/index.html", "r")
@@ -23,10 +26,50 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-logger.info("Сервер запущено.")
+connwction = None
+
+for attempt in range(10):
+    try:
+        connection = psycopg.connect("postgresql://images_backend:123456789@db:5432/images_hosting")
+        logger.info("З'єднання з БД - ОК!")
+        break
+    except psycopg.OperationalError as e:
+        logger.warning(
+            "БД ще недоступна. Спроба %d/10: %s",
+            attempt + 1,
+            e
+        )
+        time.sleep(2)
+
+if connection is None:
+    logger.error("Не вдалося підключитися до БД!")
+    raise RuntimeError("PostgreSQL недоступний")
+
+
+# створення таблиці. Додано NOT EXISTS - щоб не створювалася нова таблиця, якщо вона вже існує
+with connection.cursor() as cursor:
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS images (
+            id SERIAL PRIMARY KEY,
+            filename TEXT NOT NULL,
+            original_name TEXT NOT NULL,
+            size INTEGER NOT NULL,
+            upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            file_type TEXT NOT NULL
+        );
+        """
+    )
+connection.commit()
+connection.close()
+logger.info("Таблиця images готова!")
+
+
+
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        logger.info("Сервер запущено.")
         try:
             parsed_url = urlparse(self.path)
             params = parse_qs(parsed_url.query)

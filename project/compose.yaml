@@ -4,9 +4,13 @@ services:
     volumes:
       - ./images:/project/images
       - ./logs:/project/logs
+    depends_on:
+      - db
 
   nginx:
     image: nginx:latest
+    depends_on:
+      - app
     ports:
       - 8000:8000
     volumes:
@@ -14,3 +18,11 @@ services:
       - ./static:/web:ro
       - ./images:/project/images:ro
 
+  db:
+    image: postgres:18-alpine
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: images_hosting
+      POSTGRES_USER: images_backend
