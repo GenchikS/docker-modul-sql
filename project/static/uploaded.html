@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index_data/css/reset.css">
+    <link rel="stylesheet" href="./index_data/css/style.css">
+    <title>SmartUploader</title>
+</head>
+<body>
+    <section class="uploadIntro">
+        <div>
+            <h2 class="uploadTitle">File uploaded!</h2>
+            <p class="uploadText">You can look at the photos as soon as possible:</p>
+            <p id="file-path"></p>
+            <script>
+                const params = new URLSearchParams(window.location.search);
+                const filePath = params.get("file");
+                document.getElementById("file-path").textContent = `http://localhost:8000${filePath}`;
+            </script>
+            <form action="/" method="GET">
+                <button type="submit" class="uploadCopy">OK!</button>
+            </form>
+           </div>
+    </section>
+</body>
+</html>
+
+

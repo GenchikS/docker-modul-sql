@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index_data/css/reset.css">
+    <link rel="stylesheet" href="./index_data/css/style.css">
+    <title>SmartUploader</title>
+</head>
+<body>
+    <section class="uploadIntro">
+        <h2 class="titleIndex">Upload Photos</h2>
+        <p class="uploadDescription">Upload selfies, memes, or any fun pictures here.</p>
+        <div>
+            <div class="uploadIcon">
+                <img src="./index_data/img/icon/feather_upload-cloud.png" alt="icon">
+            </div>
+            <p class="uploadDescription">Select a file</p>
+            <p class="uploadDescription">Only support .jpg, .jpeg, .png and gif. <br>
+                Maximum file size is 5MB</p>
+        </div>
+        <div>
+            <div>
+                <h2 class="titleIndex">Current Upload</h2>
+               <form action="/upload" method="POST" class="uploadLabel" enctype="multipart/form-data">
+                    <input type="file" name="file" class="uploadInput">
+                    <input type="submit" value="Upload" class="uploadCopyIndex">
+                </form>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

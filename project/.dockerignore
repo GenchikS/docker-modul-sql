@@ -1,0 +1,7 @@
+venv
+Deckerfile
+compose.yaml
+.dockerignore
+logs/
+
+

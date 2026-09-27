@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./images:/project/images
+      - ./logs:/project/logs
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./static:/web:ro
+      - ./images:/project/images:ro
+
