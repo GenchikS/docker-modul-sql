@@ -7,6 +7,7 @@ import re
 import logging
 import psycopg
 import time
+from db.postgres import insert_image_metadata
 
 
 # пошук, вичитування та завантаження index.html
@@ -190,6 +191,18 @@ class Handler(BaseHTTPRequestHandler):
             logger.info("Успіх: зображення %s завантажено. Розмір: %d байт.", upload_name, len(data))
             f.close()
             # print(f"f", f, flush=True)
+
+            connection = psycopg.connect("postgresql://images_backend:123456789@db:5432/images_hosting")
+
+            print (insert_image_metadata(
+                connection,
+                file_name,
+                upload_name,
+                len(data),
+                expansion_name
+            ))
+
+            connection.close()
 
             # передача шляху в html, для відображення
             self.send_response(303)
