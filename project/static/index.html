@@ -19,14 +19,15 @@
             <p class="uploadDescription">Only support .jpg, .jpeg, .png and gif. <br>
                 Maximum file size is 5MB</p>
         </div>
-        <div>
-            <div>
-                <h2 class="titleIndex">Current Upload</h2>
-               <form action="/upload" method="POST" class="uploadLabel" enctype="multipart/form-data">
-                    <input type="file" name="file" class="uploadInput">
-                    <input type="submit" value="Upload" class="uploadCopyIndex">
-                </form>
-            </div>
+        <div >
+            <h2 class="titleIndex">Current Upload</h2>
+            <form action="/upload" method="POST" class="uploadLabel" enctype="multipart/form-data">
+                <input type="file" name="file" class="uploadInput">
+                <input type="submit" value="Upload" class="uploadCopyIndex">
+            </form>
+            <form action="/images-list" method="GET">
+                <button type="submit" class="listImages">List images data!</button>
+            </form>
         </div>
     </section>
 </body>

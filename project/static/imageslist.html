@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./index_data/css/reset.css">
     <link rel="stylesheet" href="./index_data/css/style.css">
-    <title>SmartUploader</title>
+    <title>SmartListInfo</title>
 </head>
 <body>
-    <section class="uploadIntro">
+    <section class="ListIntro">
         <div>
-            <h2 class="uploadTitle">File uploaded!</h2>
-            <p class="uploadText">Фото можна переглянути за посиланням:</p>
+            <h2 class="uploadTitle">File images list!</h2>
+            <!-- <p class="uploadText">Фото можна переглянути за посиланням:</p> -->
             <p id="file-path"></p>
             <script>
                 const params = new URLSearchParams(window.location.search);
                 const filePath = params.get("file");
                 document.getElementById("file-path").textContent = `http://localhost:8000${filePath}`;
             </script>
-            <form action="/" method="GET">
+            <!-- <form action="/" method="GET">
                 <button type="submit" class="uploadCopy">OK!</button>
-            </form>
+            </form> -->
+            <p>Таблиця</p>
            </div>
     </section>
 </body>

@@ -84,6 +84,9 @@ class Handler(BaseHTTPRequestHandler):
                 else: 
                     logger.info("Успіх: перехід на головну сторінку виконано!")
                     file_path = "./static/index.html"
+            elif parsed_url.path == "/images-list":
+                logger.info("Успіх: перехід до списку зображень!")
+                file_path = "./static/imageslist.html"
             else:
                 file_path = "./static" + self.path
 
@@ -194,13 +197,14 @@ class Handler(BaseHTTPRequestHandler):
 
             connection = psycopg.connect("postgresql://images_backend:123456789@db:5432/images_hosting")
 
-            print (insert_image_metadata(
+            # передача даних в функцію додавання даних до таблиці
+            insert_image_metadata(
                 connection,
                 file_name,
                 upload_name,
                 len(data),
                 expansion_name
-            ))
+            )
 
             connection.close()
 
