@@ -75,20 +75,19 @@ class Handler(BaseHTTPRequestHandler):
             parsed_url = urlparse(self.path)
             params = parse_qs(parsed_url.query)
             if parsed_url.path == "/":
-                if "uploaded" in params:
-                    logger.info("Успіх: перехід на сторінку завантаження виконано!")
-                    file_path = "./static/uploaded.html"
-                elif "error" in params:
-                    logger.error("Помилка: недопустимий файл!")
-                    file_path = "./static/error.html"
-                else: 
-                    logger.info("Успіх: перехід на головну сторінку виконано!")
-                    file_path = "./static/index.html"
+                logger.info("Успіх: перехід на головну сторінку виконано!")
+                file_path = "./static/index.html"
+            elif parsed_url.path == "/upload/":
+                logger.info("Успіх: перехід на сторінку завантаження виконано!")
+                file_path = "./static/upload.html"
             elif parsed_url.path == "/images-list":
                 logger.info("Успіх: перехід до списку зображень!")
                 file_path = "./static/imageslist.html"
+            elif parsed_url.path == "/error":
+                logger.error("Помилка: недопустимий файл!")
+                file_path = "./static/error.html"
             else:
-                file_path = "./static" + self.path
+                file_path = "./static" + parsed_url.path
 
             # завантаження css
             if os.path.isfile(file_path):
@@ -210,7 +209,7 @@ class Handler(BaseHTTPRequestHandler):
 
             # передача шляху в html, для відображення
             self.send_response(303)
-            self.send_header("Location", f"/?uploaded=1&file={path_local_http}")
+            self.send_header("Location", f"/upload/?file={path_local_http}")
             logger.info("Успіх: посилання на файл згенеровано!")
             self.end_headers()
     
