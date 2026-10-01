@@ -75,6 +75,15 @@ body {
     color: black;
 }
 
+.ListIntro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+    text-align: center;
+    color: black;
+}
+
 .titleIndex{
     font-size: 16px;
     width: 700px;
@@ -353,4 +362,32 @@ body {
     /* REMOVE BACKGROUND ON HOVER */
     opacity: 0.7;
     /* Make the icon semi-transparent for user feedback */
+}
+
+/* table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+tbody tr:hover {
+    background-color: #f0f0f0;
 }

@@ -10,5 +10,6 @@ def insert_image_metadata(connection: Connection, filename: str, original_name: 
             "INSERT INTO images (filename, original_name, size, file_type) VALUES (%s, %s, %s, %s) RETURNING id, filename;",
             [filename, original_name, size, file_type]
         )
+        connection.commit()
         logger.info("Завантаження даних - OK!")
         return cursor.fetchone()

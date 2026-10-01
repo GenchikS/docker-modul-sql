@@ -10,6 +10,7 @@ import time
 from db.postgres import insert_image_metadata
 from db.pagination import get_images_metadata
 from db.deleteimage import delete_image_metadata
+import json
 
 # пошук, вичитування та завантаження index.html
 # file = open("static/index.html", "r")
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 
-connwction = None
+connection = None
 
 for attempt in range(10):
     try:
@@ -65,7 +66,7 @@ with connection.cursor() as cursor:
         """
     )
 connection.commit()
-connection.close()
+# connection.close()
 logger.info("Таблиця images готова!")
 
 
@@ -84,6 +85,30 @@ class Handler(BaseHTTPRequestHandler):
             elif parsed_url.path == "/images-list":
                 logger.info("Успіх: перехід до списку зображень!")
                 file_path = "./static/imageslist.html"
+            elif parsed_url.path == "/images-list-data":
+                page =int(params.get("page", [1])[0])
+
+                images = get_images_metadata(connection, page)
+
+                data = []
+
+                for image in images:
+                    data.append({
+                        "id": image[0],
+                        "filename": image[1],
+                        "original_name": image[2],
+                        "size": image[3],
+                        "upload_time": str(image[4]),
+                        "file_type": image[5],
+                    })
+
+                response = json.dumps(data).encode("utf-8")
+
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(response)
+                return
             elif parsed_url.path == "/error":
                 logger.error("Помилка: недопустимий файл!")
                 file_path = "./static/error.html"
@@ -171,13 +196,13 @@ class Handler(BaseHTTPRequestHandler):
             new_name = uuid.uuid4().hex
         
             # отримання розширення файлу
-            expansion_name = str(upload_name.split(".")[-1])
+            file_type = str(upload_name.split(".")[-1])
 
             # перевірка на розширення
-            if expansion_name in {"jpg", "jpeg", "png", "gif"}:
-                file_name = new_name + "." + expansion_name
+            if file_type in {"jpg", "jpeg", "png", "gif"}:
+                file_name = new_name + "." + file_type
             else:
-                logger.error("Помилка: недопустиме розширення файлу %s.", expansion_name)
+                logger.error("Помилка: недопустиме розширення файлу %s.", file_type)
                 self.send_response(303)
                 self.send_header("Location", "/?error=1")
                 self.end_headers()
@@ -205,7 +230,7 @@ class Handler(BaseHTTPRequestHandler):
                 new_name,
                 upload_name,
                 len(data),
-                expansion_name
+                file_type
             )
             logger.info(f"Успіх: файл з id {inserted_id} завантажено до db!")
             connection.close()
@@ -220,14 +245,51 @@ class Handler(BaseHTTPRequestHandler):
             # self.send_header("Content-Type", "text/plain")
             # self.end_headers()
             # self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
-        
+            
         except Exception as e:
             logger.exception(f"Помилка: {e}")
             self.send_response(500)
             self.send_header("Content-Type", "text/plain")
             self.end_headers()
             self.wfile.write(b"500 - Internal Server Error")
+    
+    def do_DELETE(self):
+        try:
+            parsed_url = urlparse(self.path)
+            params = parse_qs(parsed_url.query)
 
+            image_id = int(params.get("id", [0])[0])
 
+            if image_id == 0:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error":"id не знайдено"}).encode("utf-8"))
+                return
+
+            logger.info("Запит на видалення зображення з id: %s", image_id)
+            # видалення з бази даних
+            delete_image_metadata(connection, image_id)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+
+            response = json.dumps({"success": True, "id": image_id}).encode("utf-8")
+
+            self.wfile.write(response)
+            
+        except Exception as e:
+            logger.exception("Помилка видалення: %s", e)
+
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+
+            response = json.dumps({"success": False, "error": "Помилка видалення"}).encode("utf-8")
+
+            self.wfile.write(response)
+
+    
 server = HTTPServer(("0.0.0.0", 8080), Handler)
 server.serve_forever()

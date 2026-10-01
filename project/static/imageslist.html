@@ -10,13 +10,78 @@
 <body>
     <section class="ListIntro">
         <div>
-            <h2 class="uploadTitle">File images list!</h2>
+            <h2 class="titleIndex">File images list!</h2>
+            <!-- <p class="uploadText">Таблиця</p> -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Filename</th>
+                        <th>Original name</th>
+                        <th>Size</th>
+                        <th>Upload time</th>
+                        <th>File type</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="images-table-body">
+                </tbody>
+            </table>
             <script>
-                const params = new URLSearchParams(window.location.search);
-                const filePath = params.get("file");
-                document.getElementById("file-path").textContent = `http://localhost:8000${filePath}`;
+                async function loadImages(page = 1) {
+                    try {
+                        const response = await fetch(`/images-list-data?page=${page}`);
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error: ${response.status}`);
+                        }
+
+                        const images = await response.json();
+
+                        const tbody = document.getElementById("images-table-body");
+
+                        tbody.innerHTML = "";
+
+                        images.forEach(image => {
+                            const row = document.createElement("tr");
+
+                            row.innerHTML = `
+                                <td>${image.id}</td>
+                                <td>${image.filename}</td>
+                                <td>${image.original_name}</td>
+                                <td>${image.size}</td>
+                                <td>${image.upload_time}</td>
+                                <td>${image.file_type}</td>
+                                <td>
+                                    <button onclick="deleteImage(${image.id})">
+                                        Delete
+                                    </button>
+                                </td>
+                            `;
+
+                            tbody.appendChild(row);
+                        });
+
+                    } catch (error) {
+                        console.error("Помилка завантаження зображень:", error);
+                    }
+                }
+
+                async function deleteImage(id) {
+                    const response = await fetch(`/delete-list-image?id=${id}`, {
+                        method: "DELETE"
+                    });
+
+                    if (!response.ok) {
+                        console.error("Помилка видалення");
+                    return;
+                    }
+
+                    loadImages(1);
+                }
+
+                loadImages(1);
             </script>
-            <p class="uploadText">Таблиця</p>
             <form action="/" method="GET">
                 <button type="submit" class="uploadCopy">OK!</button>
             </form>
