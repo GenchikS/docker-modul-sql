@@ -8,7 +8,8 @@ import logging
 import psycopg
 import time
 from db.postgres import insert_image_metadata
-
+from db.pagination import get_images_metadata
+from db.deleteimage import delete_image_metadata
 
 # пошук, вичитування та завантаження index.html
 # file = open("static/index.html", "r")
@@ -26,6 +27,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+
 
 connwction = None
 
@@ -64,8 +67,6 @@ with connection.cursor() as cursor:
 connection.commit()
 connection.close()
 logger.info("Таблиця images готова!")
-
-
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -165,13 +166,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Location", "/?error=1")
                 self.end_headers()
                 return
+            
+            # створення нової назви файлу
+            new_name = uuid.uuid4().hex
         
             # отримання розширення файлу
             expansion_name = str(upload_name.split(".")[-1])
 
             # перевірка на розширення
             if expansion_name in {"jpg", "jpeg", "png", "gif"}:
-                file_name = uuid.uuid4().hex + "." + expansion_name
+                file_name = new_name + "." + expansion_name
             else:
                 logger.error("Помилка: недопустиме розширення файлу %s.", expansion_name)
                 self.send_response(303)
@@ -190,21 +194,20 @@ class Handler(BaseHTTPRequestHandler):
             # завантаження фото
             f = open(path_local, "wb")
             f.write(data)
-            logger.info("Успіх: зображення %s завантажено. Розмір: %d байт.", upload_name, len(data))
             f.close()
             # print(f"f", f, flush=True)
 
             connection = psycopg.connect("postgresql://images_backend:123456789@db:5432/images_hosting")
 
-            # передача даних в функцію додавання даних до таблиці
-            insert_image_metadata(
+            # передача даних в функцію додавання даних до таблиці та збереження id
+            inserted_id = insert_image_metadata(
                 connection,
-                file_name,
+                new_name,
                 upload_name,
                 len(data),
                 expansion_name
             )
-
+            logger.info(f"Успіх: файл з id {inserted_id} завантажено до db!")
             connection.close()
 
             # передача шляху в html, для відображення
