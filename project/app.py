@@ -77,7 +77,7 @@ class Handler(BaseHTTPRequestHandler):
             if parsed_url.path == "/":
                 logger.info("Успіх: перехід на головну сторінку виконано!")
                 file_path = "./static/index.html"
-            elif parsed_url.path == "/upload/":
+            elif parsed_url.path == "/upload":
                 logger.info("Успіх: перехід на сторінку завантаження виконано!")
                 file_path = "./static/upload.html"
             elif parsed_url.path == "/images-list":
@@ -209,7 +209,7 @@ class Handler(BaseHTTPRequestHandler):
 
             # передача шляху в html, для відображення
             self.send_response(303)
-            self.send_header("Location", f"/upload/?file={path_local_http}")
+            self.send_header("Location", f"/upload?file={path_local_http}")
             logger.info("Успіх: посилання на файл згенеровано!")
             self.end_headers()
     
