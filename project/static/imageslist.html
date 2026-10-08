@@ -10,7 +10,12 @@
 <body>
     <section class="ListIntro">
         <div>
-            <h2 class="titleIndex">File images list!</h2>
+            <div class="containerTitle">
+                <h2 class="titleIndex">File images list!</h2>
+                <form action="/" method="GET">
+                    <button type="submit" class="exitHome">на головну сторінку</button>
+                </form>
+            </div>
             <!-- <p class="uploadText">Таблиця</p> -->
             <table>
                 <thead>
@@ -28,6 +33,8 @@
                 </tbody>
             </table>
             <script>
+                let currentPage = 1;
+                const pageSize = 10;
                 async function loadImages(page = 1) {
                     try {
                         const response = await fetch(`/images-list-data?page=${page}`);
@@ -53,7 +60,7 @@
                                 <td>${image.upload_time}</td>
                                 <td>${image.file_type}</td>
                                 <td>
-                                    <button onclick="deleteImage(${image.id})">
+                                    <button onclick="deleteImage(${image.id})" class="deleteList">
                                         Delete
                                     </button>
                                 </td>
@@ -61,10 +68,55 @@
 
                             tbody.appendChild(row);
                         });
+                        // зберігаємо поточну сторінку
+                        currentPage = page;
+                        // викликаємо функцію оновлення пагінації
+                        updatePagination(images);
 
                     } catch (error) {
                         console.error("Помилка завантаження зображень:", error);
                     }
+                }
+
+                function updatePagination(images) {
+                    const pagination = document.getElementById("pagination");
+
+                    pagination.innerHTML = "";
+
+                    // кнопка "назад"
+                    const prevButton = document.createElement("button");
+                    prevButton.textContent = "← назад";
+                    prevButton.classList.add("paginationButton");
+                    prevButton.disabled = currentPage === 1;
+
+                    prevButton.onclick = () => {
+                        if (currentPage > 1) {
+                            loadImages(currentPage - 1);
+                        }
+                    };
+
+                    pagination.appendChild(prevButton);
+
+
+                    // номер поточної сторінки
+                    const pageNumber = document.createElement("span");
+                    pageNumber.textContent = ` сторінка: ${currentPage} `;
+                    pageNumber.classList.add("pageNumber");
+                    pagination.appendChild(pageNumber);
+
+
+                    // кнопка "вперед"
+                    const nextButton = document.createElement("button");
+                    nextButton.textContent = "вперед →";
+                    nextButton.classList.add("paginationButton");
+                    // якщо приходить меньше pageSize позицій, то це остання сторінка
+                    nextButton.disabled = images.length < pageSize;
+
+                    nextButton.onclick = () => {
+                        loadImages(currentPage + 1);
+                    };
+
+                    pagination.appendChild(nextButton);
                 }
 
                 async function deleteImage(id) {
@@ -76,16 +128,14 @@
                         console.error("Помилка видалення");
                     return;
                     }
-
-                    loadImages(1);
+                    // після видалення перезавантажуємо сторінку
+                    loadImages(currentPage);
                 }
 
                 loadImages(1);
             </script>
-            <form action="/" method="GET">
-                <button type="submit" class="uploadCopy">OK!</button>
-            </form>
-           </div>
+            <div id="pagination"></div>
+            </div>
     </section>
 </body>
 </html>

@@ -254,17 +254,73 @@ body {
     margin-top: 22px;
 }
 
+.containerTitle{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 
 .uploadCopy {
-    width: 100px;
-    height: 40px;
+    width: 80px;
+    height: 30px;
     border-radius: 12px;
     border: none;
     background-color: rgb(0, 96, 255);
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
     margin-top: 24px;
+}
+
+
+.exitHome{
+    /* width: 100px; */
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    background-color: rgb(0, 96, 255);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    /* margin-top: 24px; */
+}
+
+.deleteList{
+    /* padding: 4px; */
+    width: 60px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    background-color: rgb(231, 42, 42);
+    color: black;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.pageNumber{
+    font-size: 10px;
+}
+
+.paginationButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 10px;
+    margin: 8px;
+}
+
+.paginationButton:hover {
+    background-color: #0056b3;
+}
+
+.paginationButton:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
 }
 
 /* Container for the entire table */
@@ -356,12 +412,10 @@ body {
     /* Add a smooth transition for hover effect */
 }
 
-/* Hover effect */
-.delete-btn:hover {
-    background: transparent;
-    /* REMOVE BACKGROUND ON HOVER */
-    opacity: 0.7;
-    /* Make the icon semi-transparent for user feedback */
+.containerTitle{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 /* table */

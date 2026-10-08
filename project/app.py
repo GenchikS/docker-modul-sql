@@ -86,7 +86,13 @@ class Handler(BaseHTTPRequestHandler):
                 logger.info("Успіх: перехід до списку зображень!")
                 file_path = "./static/imageslist.html"
             elif parsed_url.path == "/images-list-data":
-                page =int(params.get("page", [1])[0])
+                try:
+                    page =int(params.get("page", [1])[0])
+                except (ValueError, TypeError):
+                    page =1 
+                    
+                if page < 1:
+                    page = 1
 
                 images = get_images_metadata(connection, page)
 
