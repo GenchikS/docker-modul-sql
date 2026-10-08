@@ -36,6 +36,8 @@
                 let currentPage = 1;
                 const pageSize = 10;
                 async function loadImages(page = 1) {
+                    // змінюємо URL без перезагрузки сторінки
+                    history.pushState(null, "", `/images-list?page=${page}`);
                     try {
                         const response = await fetch(`/images-list-data?page=${page}`);
 
@@ -85,7 +87,7 @@
 
                     // кнопка "назад"
                     const prevButton = document.createElement("button");
-                    prevButton.textContent = "← назад";
+                    prevButton.textContent = "Попередня сторінка";
                     prevButton.classList.add("paginationButton");
                     prevButton.disabled = currentPage === 1;
 
@@ -107,7 +109,7 @@
 
                     // кнопка "вперед"
                     const nextButton = document.createElement("button");
-                    nextButton.textContent = "вперед →";
+                    nextButton.textContent = "Наступна сторінка →";
                     nextButton.classList.add("paginationButton");
                     // якщо приходить меньше pageSize позицій, то це остання сторінка
                     nextButton.disabled = images.length < pageSize;
@@ -131,8 +133,18 @@
                     // після видалення перезавантажуємо сторінку
                     loadImages(currentPage);
                 }
+                // Отримуємо page із адресної строчки
+                const urlParams = new URLSearchParams(window.location.search);
 
-                loadImages(1);
+                let initialPage = parseInt(urlParams.get("page")) || 1;
+
+                // захист від page=<0, page=abc
+                if (initialPage < 1) {
+                    initialPage = 1;
+                }
+
+                // Завантажуємо сторінку з URL
+                loadImages(initialPage);
             </script>
             <div id="pagination"></div>
             </div>

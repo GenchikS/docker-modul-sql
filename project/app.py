@@ -90,7 +90,7 @@ class Handler(BaseHTTPRequestHandler):
                     page =int(params.get("page", [1])[0])
                 except (ValueError, TypeError):
                     page =1 
-                    
+
                 if page < 1:
                     page = 1
 
